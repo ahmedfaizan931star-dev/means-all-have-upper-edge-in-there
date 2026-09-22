@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veritas Academy - Admission & Fee Portal</title>
+    <!-- Google Fonts: Inter & Space Grotesk for Premium Academic feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Premium Header -->
+        <header class="app-header">
+            <div class="header-brand">
+                <div class="brand-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>VERITAS ACADEMY</h1>
+                    <p>Admission & Payment Portal</p>
+                </div>
+            </div>
+            <nav class="app-nav">
+                <button type="button" class="nav-btn active" data-tab="admission">
+                    <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/user-plus.svg" alt="" aria-hidden="true" width="18" height="18" />
+                    <span>New Admission</span>
+                </button>
+                <button type="button" class="nav-btn" data-tab="payment">
+                    <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/credit-card.svg" alt="" aria-hidden="true" width="18" height="18" />
+                    <span>Fee Payment</span>
+                </button>
+                <button type="button" class="nav-btn" data-tab="admin">
+                    <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/shield-check.svg" alt="" aria-hidden="true" width="18" height="18" />
+                    <span>Admin Console</span>
+                </button>
+            </nav>
+        </header>
+
+        <!-- Main Work Area -->
+        <main class="app-content">
+            
+            <!-- TAB 1: ADMISSION FORM -->
+            <section id="admission-tab" class="tab-pane active">
+                <div class="grid-two-cols">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Student Registration Form</h2>
+                            <p>Submit details to register and generate a unique Student ID.</p>
+                        </div>
+                        <form id="admission-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="student-name">Full Name *</label>
+                                    <input type="text" id="student-name" required placeholder="Faizan Ahmed">
+                                </div>
+                                <div class="form-group">
+                                    <label for="student-email">Email Address *</label>
+                                    <input type="email" id="student-email" required placeholder="faizan@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="student-phone">Phone Number *</label>
+                                    <input type="tel" id="student-phone" required placeholder="+92 300 1234567">
+                                </div>
+                                <div class="form-group">
+                                    <label for="student-grade">Grade / Class *</label>
+                                    <select id="student-grade" required>
+                                        <option value="" disabled selected>Select Grade</option>
+                                        <option value="Grade 9" data-admission-fee="15000" data-tuition-fee="8000">Grade 9 (Tuition: PKR 8,000)</option>
+                                        <option value="Grade 10" data-admission-fee="15000" data-tuition-fee="8500">Grade 10 (Tuition: PKR 8,500)</option>
+                                        <option value="O-Levels" data-admission-fee="25000" data-tuition-fee="15000">O-Levels (Tuition: PKR 15,000)</option>
+                                        <option value="A-Levels" data-admission-fee="30000" data-tuition-fee="20000">A-Levels (Tuition: PKR 20,000)</option>
+                                    </select> 
+                                </div>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="student-address">Residential Address</label>
+                                <textarea id="student-address" rows="2" placeholder="Street Address, City"></textarea>
+                                <span class="input-tip">Fill all mandatory fields (*) to calculate initial dues automatically.</span>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">
+                                    <span>Submit Application</span>
+                                    <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/arrow-right.svg" alt="" aria-hidden="true" width="18" height="18" />
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Admission Sidebar Info -->
+                    <div class="sidebar-pane">
+                        <div class="card summary-card">
+                            <h3>Dues Computation</h3>
+                            <div class="summary-details">
+                                <div class="summary-row">
+                                    <span>Selected Program:</span>
+                                    <strong id="summary-program">None</strong>
+                                </div>
+                                <div class="summary-row">
+                                    <span>One-time Registration Fee:</span>
+                                    <strong id="summary-admission-fee">PKR 0</strong>
+                                </div>
+                                <div class="summary-row">
+                                    <span>First Month Tuition Fee:</span>
+                                    <strong id="summary-tuition-fee">PKR 0</strong>
+                                </div>
+                                <hr class="divider">
+                                <div class="summary-row total-row">
+                                    <span>Total Initial Dues:</span>
+                                    <strong id="summary-total">PKR 0</strong>
+                                </div>
+                            </div>
+                            <div class="notification-banner">
+                                <div class="banner-icon">
+                                    <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/info.svg" alt="" aria-hidden="true" width="16" height="16" />
+                                </div>
+                                <p>Upon submission, a unique Student ID will be generated to pay fees in the payment portal.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: FEE PAYMENT PORTAL -->
+            <section id="payment-tab" class="tab-pane">
+                <div class="grid-two-cols">
+                    <!-- Left Column: Search & Custom Money input -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Secure Fee Payment Portal</h2>
+                            <p>Verify details, customize your payment amount, and generate your Easypaisa QR invoice instantly.</p>
+                        </div>
+
+                        <!-- Student Lookup -->
+                        <div class="search-box">
+                            <div class="form-group">
+                                <label for="search-student-id">Enter Student ID *</label>
+                                <div class="search-input-group">
+                                    <input type="text" id="search-student-id" placeholder="e.g., VER-2023-101">
+                                    <button type="button" id="btn-search-student" class="btn-secondary">
+                                        <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/search.svg" alt="" aria-hidden="true" width="16" height="16" />
+                                        <span>Search</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Student Lookup Result Info Block -->
+                        <div id="payment-student-info" class="student-info-panel hidden">
+                            <div class="info-badge">
+                                <span class="badge-title">Verified Student</span>
+                                <h3 id="pay-student-name">-</h3>
+                                <p id="pay-student-details">-</p>
+                            </div>
+                            
+                            <div class="dues-box">
+                                <div class="dues-info">
+                                    <span>Remaining Total Balance Due:</span>
+                                    <strong id="pay-outstanding-bal">PKR 0</strong>
+                                </div>
+                            </div>
+
+                            <!-- Custom Money Selector -->
+                            <div class="payment-input-section">
+                                <label for="custom-pay-amount">Preferred Payment Amount (PKR) *</label>
+                                <div class="currency-input-wrapper">
+                                    <span class="currency-label">PKR</span>
+                                    <input type="number" id="custom-pay-amount" min="1" placeholder="Enter preferred amount">
+                                </div>
+                                <div class="quick-presets">
+                                    <button type="button" class="preset-btn" data-amount="2000">PKR 2,000</button>
+                                    <button type="button" class="preset-btn" data-amount="5000">PKR 5,000</button>
+                                    <button type="button" class="preset-btn" id="preset-full-due">Full Outstanding</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="lookup-empty-state" class="empty-state">
+                            <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/file-search.svg" alt="" aria-hidden="true" width="48" height="48" />
+                            <p>Search for a valid student ID above to unlock the dynamic payment invoice flow.</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Easypaisa QR Invoice Generation -->
+                    <div class="sidebar-pane">
+                        <div id="qr-payment-card" class="card payment-card locked">
+                            <div class="payment-header">
+                                <div class="easypaisa-brand">
+                                    <span class="ep-badge">easypaisa</span>
+                                    <span class="inst-badge">Instant QR</span>
+                                </div>
+                            </div>
+                            
+                            <div class="payment-body">
+                                <p class="invoice-instruction">Scan QR via Easypaisa, Alfa, or any banking app to pay securely.</p>
+                                
+                                <!-- QR code block -->
+                                <div class="qr-wrapper">
+                                    <div class="qr-shield-overlay">
+                                        <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/lock.svg" alt="Locked" width="24" height="24" />
+                                        <span>Awaiting Custom Amount</span>
+                                    </div>
+                                    <img id="easypaisa-qr-img" src="" alt="Easypaisa QR Code" class="hidden">
+                                </div>
+
+                                <div class="payment-meta">
+                                    <div class="meta-row">
+                                        <span>Payee:</span>
+                                        <strong>Veritas Academy (Acct: 031024345)</strong>
+                                    </div>
+                                    <div class="meta-row">
+                                        <span>Invoice Amount:</span>
+                                        <strong id="invoice-amount-display" class="text-highlight">PKR 0</strong>
+                                    </div>
+                                    <div class="meta-row">
+                                        <span>Ref Code:</span>
+                                        <strong id="invoice-ref-code">-</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="payment-actions">
+                                <button type="button" id="btn-confirm-payment" class="btn-primary full-width" disabled>
+                                    <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/check-circle.svg" alt="" aria-hidden="true" width="18" height="18" />
+                                    <span>Simulate Scan & Confirm</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: ADMIN CONSOLE -->
+            <section id="admin-tab" class="tab-pane">
+                <div class="admin-grid">
+                    <!-- Supabase Connection Config Panel -->
+                    <div class="card db-config-card">
+                        <div class="card-header-flex">
+                            <div class="header-meta">
+                                <h2>Database Engine & Cloud Sync</h2>
+                                <p>Switch between client memory sandbox and a real Supabase Cloud database.</p>
+                            </div>
+                            <div id="db-status-badge" class="db-badge offline">Local Sandbox Active</div>
+                        </div>
+                        
+                        <div class="supabase-settings-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="sb-url">Supabase Project URL</label>
+                                    <input type="password" id="sb-url" placeholder="https://yourproject.supabase.co">
+                                </div>
+                                <div class="form-group">
+                                    <label for="sb-key">Supabase Anon/Public Key</label>
+                                    <input type="password" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsIn...">
+                                </div>
+                            </div>
+                            <div class="db-actions">
+                                <button type="button" id="btn-save-db-config" class="btn-secondary">
+                                    <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/database.svg" alt="" aria-hidden="true" width="16" height="16" />
+                                    <span>Link Supabase Cloud</span>
+                                </button>
+                                <button type="button" id="btn-reset-demo-db" class="btn-danger">
+                                    <span>Reset Demo Data</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Student Database and Transactions -->
+                    <div class="card db-records-card">
+                        <div class="card-header">
+                            <h2>Registered Students Registry</h2>
+                            <p>Direct view of indexed school profiles sync status.</p>
+                        </div>
+                        
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Student Name</th>
+                                        <th>Grade</th>
+                                        <th>Outstanding Balance</th>
+                                        <th>Sync Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-students-tbody">
+                                    <!-- Injected via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card db-records-card">
+                        <div class="card-header">
+                            <h2>Transaction & Fee Ledger</h2>
+                            <p>Log of payments received via Easypaisa.</p>
+                        </div>
+                        
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Student ID</th>
+                                        <th>Amount Paid</th>
+                                        <th>Reference</th>
+                                        <th>Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-transactions-tbody">
+                                    <!-- Injected via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Global Footer -->
+        <footer class="app-footer-bar">
+            <p>&copy; Veritas Academy Unified Financial Engine. Running on ArtifactLoop Agent OS Sandbox.</p>
+        </footer>
+    </div>
+
+    <!-- Success Receipt Modal -->
+    <div id="receipt-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="receipt-header">
+                <div class="success-badge">
+                    <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/shield-check.svg" alt="" width="32" height="32" />
+                </div>
+                <h3>Payment Complete</h3>
+                <p>Veritas Academy e-Receipt</p>
+            </div>
+            <div class="receipt-body">
+                <div class="receipt-row">
+                    <span>Receipt ID:</span>
+                    <strong id="rec-id">-</strong>
+                </div>
+                <div class="receipt-row">
+                    <span>Student ID:</span>
+                    <strong id="rec-stud-id">-</strong>
+                </div>
+                <div class="receipt-row">
+                    <span>Student Name:</span>
+                    <strong id="rec-stud-name">-</strong>
+                </div>
+                <div class="receipt-row">
+                    <span>Amount Received:</span>
+                    <strong id="rec-amount" class="success-color">-</strong>
+                </div>
+                <div class="receipt-row">
+                    <span>Payment Method:</span>
+                    <strong>Easypaisa QR</strong>
+                </div>
+                <div class="receipt-row">
+                    <span>Ref Code:</span>
+                    <strong id="rec-ref">-</strong>
+                </div>
+                <div class="receipt-row">
+                    <span>Date/Time:</span>
+                    <strong id="rec-date">-</strong>
+                </div>
+            </div>
+            <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                <button type="button" id="btn-download-receipt" class="btn-secondary full-width" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/download.svg" alt="" aria-hidden="true" width="16" height="16" />
+                    <span>Download Official Receipt</span>
+                </button>
+                <button type="button" id="btn-close-receipt" class="btn-primary full-width">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offscreen canvas for receipt generation -->
+    <canvas id="receiptCanvas" width="450" height="600" style="display:none;"></canvas>
+
+    <!-- Connect to updated script.js -->
+    <script src="script.js"></script>
+</body>
+</html>
